@@ -2,6 +2,8 @@ public class Screen {
     private int width, height;
 
     public int[] pixels;
+    public int xtime, ytime;
+    int counter;
 
 
     public Screen(int width, int height){

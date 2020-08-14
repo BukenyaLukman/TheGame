@@ -3,13 +3,14 @@ import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.nio.Buffer;
+
 
 public class Game extends Canvas implements Runnable {
 
     public static int width = 300;
     public static int height = width / 16 * 9;
     public static int scale = 3;
+    public static String title = "The Game";
 
     private JFrame frame;
     private boolean running;
@@ -43,11 +44,34 @@ public class Game extends Canvas implements Runnable {
 
     }
     public void run(){
+        long lastTime = System.nanoTime();
+        long timer = System.currentTimeMillis();
+        final double ns = 1000000000.0 / 60;
+        double delta = 0;
+        int frames = 0;
+        int updates = 0;
+
         while (running){
-            //update();
+            long now = System.nanoTime();
+            delta += (now - lastTime) / ns;
+            lastTime = now;
+            while(delta >= 1){
+                update();
+                updates++;
+                delta--;
+            }
             render();
-            //System.out.println("Running...");
+            frames++;
+            if(System.currentTimeMillis() - timer > 1000){
+                timer += 1000;
+                System.out.println(updates + " ups, "+ frames + " fps");
+                frame.setTitle(title + updates + " ups" + frames +" fps");
+                updates = 0;
+                frames = 0;
+            }
         }
+        stop();
+
     }
 
     private void render() {
@@ -70,14 +94,14 @@ public class Game extends Canvas implements Runnable {
         bs.show();
     }
 
-    private void update() {
+    public void update() {
 
     }
 
     public static void main(String[] args){
         Game game = new Game();
         game.frame.setResizable(false);
-        game.frame.setTitle("TheGame");
+        //game.frame.setTitle(title);
         game.frame.add(game);
         game.frame.pack();
         game.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
